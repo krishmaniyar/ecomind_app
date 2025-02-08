@@ -1,3 +1,4 @@
+import 'package:ecomind/screens/home/sale_list.dart';
 import 'package:ecomind/services/buyer_page.dart';
 import 'package:ecomind/services/profile_page.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import '../models/brew.dart';
 import '../models/user.dart';
 import '../screens/home/brew_list.dart';
 import '../screens/home/home.dart';
+import 'add_product.dart';
 import 'database.dart';
 
 class SellerPage extends StatefulWidget {
@@ -54,14 +56,31 @@ class _SellerPageState extends State<SellerPage> {
       initialData: null,
       value: DatabaseService(uid: user!.uid).brews,
       child: Scaffold(
-        body: Container(
-          child: BrewList(),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SafeArea(
+            child: Column(
+              children: [
+                Text(
+                  'Your Products',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                  ),
+                ),
+                Expanded(
+                  child: SaleList()
+                ),
+              ],
+            ),
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            setState(() {
-              // counter += 1;
-            });
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddProduct()),
+            );
           },
           backgroundColor: Colors.blue[800],
           child: Icon(

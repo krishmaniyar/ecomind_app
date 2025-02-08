@@ -26,8 +26,8 @@ class DatabaseService {
       return Brew(
         name: data['name'] ?? '',
         rewardpoints: data['rewardpoints'] ?? 0,
-        userinfo: data['userinfo'] ?? {'hi': 'hello'},
-        productdetails: data['productdetails'] ?? [{'name':'details1'}],
+        userinfo: data['userinfo'] ?? {},
+        productdetails: data['productdetails'] ?? [],
       );
     }).toList();
   }
