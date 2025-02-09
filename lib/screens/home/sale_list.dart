@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -16,6 +17,7 @@ class _SaleListState extends State<SaleList> {
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<UserObj?>(context);
+
     return StreamBuilder<UserData>(
       stream: DatabaseService(uid: user!.uid).userData,
       builder: (context, snapshot) {
@@ -25,7 +27,7 @@ class _SaleListState extends State<SaleList> {
             padding: const EdgeInsets.all(10.0),
             child: GridView.builder(
               shrinkWrap: false,
-              physics: const BouncingScrollPhysics(),
+              physics: AlwaysScrollableScrollPhysics(),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: MediaQuery.of(context).size.width < 600 ? 2 : 3,
                 crossAxisSpacing: 8.0,
@@ -36,98 +38,92 @@ class _SaleListState extends State<SaleList> {
               itemBuilder: (context, productIndex) {
                 final product = userData?.productdetails[productIndex];
 
-                return Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.5,
-                              maxHeight: 120,
-                              minHeight: 120),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.asset(
-                              product['category'] == 'paper'
-                                  ? 'assets/paper.jpg'
-                                  : product['category'] == 'metal'
-                                  ? 'assets/metal.jpg'
-                                  : product['category'] == 'plastic'
-                                  ? 'assets/plastic.jpeg'
-                                  : product['category'] == 'cardboard'
-                                  ? 'assets/cardboard.jpeg'
-                                  : product['category'] == 'glass'
-                                  ? 'assets/glass.jpeg'
-                                  : product['category'] == 'shoes'
-                                  ? 'assets/shoes.jpeg'
-                                  : product['category'] == 'trash'
-                                  ? 'assets/trash.jpeg'
-                                  : product['category'] == 'clothes'
-                                  ? 'assets/clothes.jpeg'
-                                  : product['category'] == 'battery'
-                                  ? 'assets/battery.jpeg'
-                                  : product['category'] == 'biological'
-                                  ? 'assets/biological.jpeg'
-                                  : 'assets/other.png',
-                              fit: BoxFit.cover,
+                return FadeInUp(
+                  duration: Duration(milliseconds: 500 + (productIndex * 100)),
+                  child: Card(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          FadeIn(
+                            duration: Duration(milliseconds: 400),
+                            child: Container(
+                              width: double.infinity,
+                              constraints: BoxConstraints(
+                                maxWidth: MediaQuery.of(context).size.width * 0.5,
+                                maxHeight: 120,
+                                minHeight: 120,
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.asset(
+                                  _getProductImage(product['category']),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          product['name'],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "Price: ₹${product['price']}",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "Category: ${product['category']}",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        TextButton(
-                          onPressed: () {
-                            _showCancelConfirmation(context, user, userData!, product);
-                          },
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 15.0),
-                            backgroundColor: Colors.yellow,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30.0),
-                            ),
-                            elevation: 5,
-                          ),
-                          child: const Text(
-                            "Cancel",
-                            style: TextStyle(
-                              fontSize: 20,
+                          const SizedBox(height: 8.0),
+
+                          Text(
+                            product['name'],
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              fontSize: 16,
                             ),
                           ),
-                        )
-                      ],
+                          const SizedBox(height: 4),
+
+                          Text(
+                            "Price: ₹${product['price']}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+
+                          Text(
+                            "Category: ${product['category']}",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[700],
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+
+                          ZoomIn(
+                            duration: Duration(milliseconds: 300),
+                            child: TextButton(
+                              onPressed: () {
+                                _showCancelConfirmation(context, user, userData!, product);
+                              },
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 15.0),
+                                backgroundColor: Colors.green[900],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0),
+                                ),
+                                elevation: 5,
+                              ),
+                              child: const Text(
+                                "Cancel",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -155,18 +151,15 @@ class _SaleListState extends State<SaleList> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
+                Navigator.of(context).pop();
               },
               child: const Text("No", style: TextStyle(fontSize: 16)),
             ),
             TextButton(
               onPressed: () async {
-                Navigator.of(context).pop(); // Close dialog first
-
-                // Remove the product
+                Navigator.of(context).pop();
                 userData.productdetails.remove(product);
 
-                // Update the user data in the database
                 await DatabaseService(uid: user.uid).updateUserData(
                   userData.name,
                   userData.rewardpoints,
@@ -187,5 +180,21 @@ class _SaleListState extends State<SaleList> {
         );
       },
     );
+  }
+
+  String _getProductImage(String category) {
+    switch (category) {
+      case 'paper': return 'assets/paper.jpg';
+      case 'metal': return 'assets/metal.jpg';
+      case 'plastic': return 'assets/plastic.jpeg';
+      case 'cardboard': return 'assets/cardboard.jpeg';
+      case 'glass': return 'assets/glass.jpeg';
+      case 'shoes': return 'assets/shoes.jpeg';
+      case 'trash': return 'assets/trash.jpeg';
+      case 'clothes': return 'assets/clothes.jpeg';
+      case 'battery': return 'assets/battery.jpeg';
+      case 'biological': return 'assets/biological.jpeg';
+      default: return 'assets/other.png';
+    }
   }
 }

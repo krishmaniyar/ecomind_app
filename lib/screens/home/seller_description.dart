@@ -18,36 +18,77 @@ class SellerDescription extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Scaffold(
-            backgroundColor: Colors.white, // White background
-            body: SafeArea(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: MediaQuery.of(context).size.width * 0.05,
-                  vertical: MediaQuery.of(context).size.height * 0.02,
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Text(
-                          'Seller Contact Details',
-                          style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width * 0.06,
+            backgroundColor: Colors.grey[100], // Light grey background
+            appBar: AppBar(
+              backgroundColor: Colors.green[700],
+              title: const Text(
+                'Seller Details',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+              elevation: 3,
+            ),
+            body: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Profile Header
+                  Center(
+                    child: Column(
+                      children: [
+                        CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Colors.green[700],
+                          child: const Icon(Icons.person, size: 40, color: Colors.white),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          brew.name,
+                          style: const TextStyle(
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            color: Colors.black87,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      _buildInfo('Name', brew.name, context),
-                      _buildInfo('Points', '${brew.rewardpoints}', context),
-                      _buildInfo('Phone Number', brew.userinfo['phoneno'], context),
-                      _buildInfo('Email Address', brew.userinfo['emailid'], context),
-                      _buildInfo('Organization', brew.userinfo['organization'], context),
-                    ],
+                        Text(
+                          "Eco Seller",
+                          style: TextStyle(color: Colors.green[800], fontSize: 14),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 20),
+
+                  // Contact Information
+                  _buildInfoCard(
+                    icon: Icons.emoji_events,
+                    label: "Reward Points",
+                    value: '${brew.rewardpoints}',
+                    color: Colors.orange,
+                  ),
+                  _buildInfoCard(
+                    icon: Icons.phone,
+                    label: "Phone Number",
+                    value: brew.userinfo['phoneno'],
+                    color: Colors.blue,
+                  ),
+                  _buildInfoCard(
+                    icon: Icons.email,
+                    label: "Email Address",
+                    value: brew.userinfo['emailid'],
+                    color: Colors.redAccent,
+                  ),
+                  _buildInfoCard(
+                    icon: Icons.business,
+                    label: "Organization",
+                    value: brew.userinfo['organization'],
+                    color: Colors.purple,
+                  ),
+                ],
               ),
             ),
           );
@@ -58,39 +99,25 @@ class SellerDescription extends StatelessWidget {
     );
   }
 
-  Widget _buildInfo(String label, String value, BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: MediaQuery.of(context).size.width * 0.04,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Container(
-            width: double.infinity, // Ensures full width
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey[200], // Light grey background
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width * 0.045,
-                fontWeight: FontWeight.w500,
-              ),
-              softWrap: true, // Ensures text wraps instead of overflowing
-              overflow: TextOverflow.visible, // Allows multiline text
-            ),
-          ),
-        ],
+  // Stylish Card Design for Displaying Information
+  Widget _buildInfoCard({required IconData icon, required String label, required String value, required Color color}) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 2,
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: color.withOpacity(0.2),
+          child: Icon(icon, color: color, size: 22),
+        ),
+        title: Text(
+          label,
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Colors.grey),
+        ),
+        subtitle: Text(
+          value,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
       ),
     );
   }

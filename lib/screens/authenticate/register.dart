@@ -39,7 +39,7 @@ class _RegisterState extends State<Register> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.recycling_outlined,
+                  Icons.eco,
                   size: 40.0,
                 ),
                 SizedBox(

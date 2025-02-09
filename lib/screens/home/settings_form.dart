@@ -32,14 +32,25 @@ class _SettingsFormState extends State<SettingsForm> {
           UserData? userData = snapshot.data;
 
           return Scaffold(
-            backgroundColor: Colors.white,
-            resizeToAvoidBottomInset: true,
+            backgroundColor: Colors.grey[100],
+            appBar: AppBar(
+              backgroundColor: Colors.green[700],
+              title: const Text(
+                'Edit Profile',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+              elevation: 3,
+            ),
             body: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: SingleChildScrollView(
                 padding: EdgeInsets.only(
-                  left: 16.0,
-                  right: 16.0,
+                  left: 20.0,
+                  right: 20.0,
                   top: 20.0,
                   bottom: MediaQuery.of(context).viewInsets.bottom + 50,
                 ),
@@ -48,16 +59,36 @@ class _SettingsFormState extends State<SettingsForm> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Center(
-                        child: Text(
-                          'Update Your Profile',
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      // Profile Header
+                      Center(
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 40,
+                              backgroundColor: Colors.green[700],
+                              child: const Icon(Icons.person, size: 40, color: Colors.white),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              userData?.name ?? "User",
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              "Edit your details",
+                              style: TextStyle(color: Colors.green[800], fontSize: 14),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 20.0),
 
                       // Username
                       _buildTextField(
+                        icon: Icons.person,
                         label: 'Username',
                         initialValue: _currentName ?? userData?.name,
                         keyboardType: TextInputType.text,
@@ -67,8 +98,9 @@ class _SettingsFormState extends State<SettingsForm> {
 
                       // Phone Number (Only allows numbers, enforces 10 digits)
                       _buildTextField(
+                        icon: Icons.phone,
                         label: 'Phone Number',
-                        initialValue: userData?.userinfo['phoneno'],
+                        initialValue: userData?.userinfo['phoneno'] == "Not Provided yet" ? '' : userData?.userinfo['phoneno'],
                         keyboardType: TextInputType.phone,
                         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                         validator: (val) {
@@ -84,8 +116,9 @@ class _SettingsFormState extends State<SettingsForm> {
 
                       // Email ID (Strict validation)
                       _buildTextField(
+                        icon: Icons.email,
                         label: 'Email ID',
-                        initialValue: userData?.userinfo['emailid'],
+                        initialValue: userData?.userinfo['emailid'] == "Not Provided yet" ? '' : userData?.userinfo['emailid'],
                         keyboardType: TextInputType.emailAddress,
                         validator: (val) {
                           if (val == null || val.trim().isEmpty) {
@@ -100,6 +133,7 @@ class _SettingsFormState extends State<SettingsForm> {
 
                       // Organization (Required)
                       _buildTextField(
+                        icon: Icons.business,
                         label: 'Organization',
                         initialValue: userData?.userinfo['organization'],
                         keyboardType: TextInputType.text,
@@ -111,8 +145,10 @@ class _SettingsFormState extends State<SettingsForm> {
 
                       // Update Profile Button
                       Center(
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green[700],
+                            foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -152,8 +188,9 @@ class _SettingsFormState extends State<SettingsForm> {
     );
   }
 
-  // Text Field Builder Function
+  // Stylish Text Field Builder Function
   Widget _buildTextField({
+    required IconData icon,
     required String label,
     required String? initialValue,
     required Function(String) onChanged,
@@ -167,7 +204,10 @@ class _SettingsFormState extends State<SettingsForm> {
         initialValue: initialValue,
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(),
+          prefixIcon: Icon(icon, color: Colors.green[700]),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         ),
         keyboardType: keyboardType,

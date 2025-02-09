@@ -54,18 +54,31 @@ class _BuyerPageState extends State<BuyerPage> {
       initialData: null,
       value: DatabaseService(uid: user!.uid).brews,
       child: Scaffold(
+        appBar: AppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'EcoMart',
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ],
+          ),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.green.shade700, Colors.green.shade400],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+        ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: SafeArea(
             child: Column(
               children: [
-                Text(
-                  'EcoMart',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                  ),
-                ),
                 Expanded(
                   child: BrewList()
                 ),
@@ -76,7 +89,7 @@ class _BuyerPageState extends State<BuyerPage> {
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           backgroundColor: Colors.white, // Optional: make the background white
-          selectedItemColor: Colors.blue[900], // Set color for selected item
+          selectedItemColor: Colors.green, // Set color for selected item
           unselectedItemColor: Colors.black,
           onTap: (index) {
             setState(() {
@@ -99,11 +112,11 @@ class _BuyerPageState extends State<BuyerPage> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.money_outlined),
+              icon: Icon(Icons.shopping_bag_outlined),
               label: 'Buyer',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.money_off),
+              icon: Icon(Icons.shopping_cart_outlined),
               label: 'Seller',
             ),
             BottomNavigationBarItem(

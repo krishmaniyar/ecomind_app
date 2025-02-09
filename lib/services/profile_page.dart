@@ -1,155 +1,61 @@
-import 'package:ecomind/services/seller_page.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:ecomind/screens/home/settings_form.dart';
 import 'package:flutter/material.dart';
-import 'package:ecomind/screens/home/home.dart';
-import 'package:ecomind/services/auth.dart';
 import 'package:provider/provider.dart';
 import '../../models/user.dart';
-import '../screens/home/settings_form.dart';
-import 'buyer_page.dart';
 import 'database.dart';
+import 'buyer_page.dart';
+import 'seller_page.dart';
+import 'package:ecomind/screens/home/home.dart';
+import 'package:ecomind/services/auth.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStateMixin {
   final AuthService _auth = AuthService();
-  double fsize = 25.0;
   int _selectedIndex = 3;
 
-  bool seller_page = false;
-  bool home_page = false;
-  bool buyer_page = false;
+  bool sellerPage = false;
+  bool homePage = false;
+  bool buyerPage = false;
+  bool _showDeveloperInfo = false;
 
-  void _onHomeTapped() {
-    setState(() {
-      home_page = true;
-    });
-  }
-
-  void _onBuyerTapped() {
-    setState(() {
-      buyer_page = true;
-    });
-  }
-
-  void _onSellerTapped() {
-    setState(() {
-      seller_page = true;
-    });
-  }
-
-  void _onProfileTapped() {}
-
-  void _showRewardPopup(int rewardPoints) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            "🎉 Reward Points",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("⭐ Total Points: $rewardPoints", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              SizedBox(height: 10),
-              Text(
-                "💡 Tip: Earn more points by selling more products!",
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text("Got it!", style: TextStyle(color: Colors.blue)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showSupportPopup() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("💡 About Us"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("👨‍💻 Developers:", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("• Krish\n• Mohit\n• Anshul\n• Madhan"),
-              SizedBox(height: 10),
-              Text("🚀 Team Name:", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("EcoCoders"),
-              SizedBox(height: 10),
-              Text("🎯 Goal:", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("To optimize the recycling flow and make it more efficient."),
-            ],
-          ),
-          actions: [
-            TextButton(
-              child: Text("Close", style: TextStyle(color: Colors.blue)),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  void _onHomeTapped() => setState(() => homePage = true);
+  void _onBuyerTapped() => setState(() => buyerPage = true);
+  void _onSellerTapped() => setState(() => sellerPage = true);
 
   @override
   Widget build(BuildContext context) {
-    void _showSettingsPanel() {
-      showModalBottomSheet(
-          context: context,
-          builder: (context) {
-            return Container(
-              color: Colors.white,
-              padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0),
-              child: SettingsForm(),
-            );
-          });
-    }
-
     final user = Provider.of<UserObj?>(context);
     DatabaseService databaseService = DatabaseService(uid: user!.uid);
 
-    return seller_page
+    return sellerPage
         ? SellerPage()
-        : home_page
+        : homePage
         ? Home()
-        : buyer_page
+        : buyerPage
         ? BuyerPage()
         : Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         title: Row(
           children: [
+            Icon(Icons.eco, size: 30, color: Colors.white),
             SizedBox(width: 10.0),
-            Icon(Icons.recycling_outlined, size: fsize + 10),
-            SizedBox(width: 10.0),
-            Text(
-              'EcoMind',
-              style: TextStyle(fontSize: fsize + 5, fontWeight: FontWeight.bold),
-            ),
+            Text('EcoMind', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
           ],
         ),
-        backgroundColor: Colors.white,
-        elevation: 0.0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.green.shade700, Colors.green.shade400],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
       body: StreamBuilder<UserData>(
         stream: databaseService.userData,
@@ -157,123 +63,51 @@ class _ProfilePageState extends State<ProfilePage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
-
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           }
-
           if (!snapshot.hasData) {
             return Center(child: Text('No user data available'));
           }
 
           UserData userData = snapshot.data!;
-          return Center(
+          return SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(30.0, 20.0, 30.0, 0.0),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.blue, width: 1.6),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Stack(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(13.0),
-                          child: Row(
-                            children: [
-                              SizedBox(width: 10.0),
-                              CircleAvatar(radius: fsize + 4, backgroundImage: AssetImage('assets/profile_pic.png')),
-                              SizedBox(width: 20.0),
-                              Text(userData.name ?? 'Guest User', style: TextStyle(fontSize: fsize - 5)),
-                            ],
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: TextButton(
-                            child: Text('Edit >', style: TextStyle(color: Colors.blue)),
-                            onPressed: _showSettingsPanel,
-                          ),
-                        ),
-                      ],
-                    ),
+                  _buildProfileCard(userData),
+                  SizedBox(height: 16),
+                  _buildInfoCard("Phone No", userData.userinfo['phoneno'] ?? "Not Provided", Icons.phone, Colors.green),
+                  _buildInfoCard("Email ID", userData.userinfo['emailid'] ?? "Not Provided", Icons.email, Colors.blue),
+                  _buildInfoCard("Organization", userData.userinfo['organization'] ?? "Not Provided", Icons.business, Colors.orange),
+                  _buildInfoCard("Reward Points", "${userData.rewardpoints}", Icons.stars_outlined, Colors.amber),
+                  SizedBox(height: 1),
+
+                  // About Developers (Tap to Reveal)
+                  _buildDeveloperToggle(),
+
+                  // Developer Info (Fixed overflow issue)
+                  AnimatedSize(
+                    duration: Duration(milliseconds: 300),
+                    child: _showDeveloperInfo ? _buildDeveloperInfo() : SizedBox.shrink(),
                   ),
-                  SizedBox(height: 20.0),
-                  GestureDetector(
-                    onTap: () => _showRewardPopup(userData.rewardpoints),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(10),
+
+                  SizedBox(height: 10),
+
+                  // Logout Button (Reduced space)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          children: [
-                            SizedBox(width: 10.0),
-                            Icon(Icons.stars_outlined, size: fsize),
-                            SizedBox(width: 20.0),
-                            Text(
-                              'Reward Points: ${userData.rewardpoints}',
-                              style: TextStyle(fontSize: fsize - 3, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.0),
-                  GestureDetector(
-                    onTap: () => _showSupportPopup(),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Row(
-                          children: [
-                            SizedBox(width: 10.0),
-                            Icon(CupertinoIcons.info, size: fsize),
-                            SizedBox(width: 20.0),
-                            Text(
-                              'About us',
-                              style: TextStyle(fontSize: fsize - 3, fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 20.0),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: TextButton.icon(
-                      onPressed: () async {
-                        await _auth.signOut();
-                      },
-                      label: Padding(
-                        padding: const EdgeInsets.all(3.0),
-                        child: Row(
-                          children: [
-                            SizedBox(width: 10.0),
-                            Icon(Icons.logout_outlined, size: fsize, color: Colors.black),
-                            SizedBox(width: 20.0),
-                            Text(
-                              'Logout',
-                              style: TextStyle(fontSize: fsize - 3, fontWeight: FontWeight.bold, color: Colors.black),
-                            ),
-                          ],
-                        ),
-                      ),
+                      icon: Icon(Icons.logout, color: Colors.white),
+                      label: Text("Logout", style: TextStyle(fontSize: 18, color: Colors.white)),
+                      onPressed: () async => await _auth.signOut(),
                     ),
                   ),
                 ],
@@ -285,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         backgroundColor: Colors.white,
-        selectedItemColor: Colors.blue[900],
+        selectedItemColor: Colors.green,
         unselectedItemColor: Colors.black,
         onTap: (index) {
           setState(() {
@@ -297,10 +131,89 @@ class _ProfilePageState extends State<ProfilePage> {
         },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.money_outlined), label: 'Buyer'),
-          BottomNavigationBarItem(icon: Icon(Icons.money_off), label: 'Seller'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_bag_outlined), label: 'Buyer'),
+          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart_outlined), label: 'Seller'),
           BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Profile'),
         ],
+      ),
+    );
+  }
+
+  Widget _buildProfileCard(UserData userData) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            CircleAvatar(radius: 35, backgroundImage: AssetImage('assets/profile_pic.png')),
+            SizedBox(width: 20),
+            Expanded(child: Text(userData.name ?? 'Guest User', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold))),
+            IconButton(icon: Icon(Icons.edit, color: Colors.green), onPressed: () {
+              Navigator.push(
+                context,
+                  MaterialPageRoute(builder: (context) => SettingsForm())
+              );
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(String title, String value, IconData icon, Color color) {
+    return Container(
+      height: 70,
+      margin: EdgeInsets.symmetric(vertical: 1), // Reduced spacing
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: ListTile(
+          leading: Icon(icon, color: color, size: 30),
+          title: Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          trailing: Text(value, style: TextStyle(fontSize: 14, color: Colors.black54)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDeveloperToggle() {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _showDeveloperInfo = !_showDeveloperInfo;
+        });
+      },
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: ListTile(
+          leading: Icon(Icons.code, color: Colors.blue, size: 30),
+          title: Text("About Developers", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          trailing: Icon(_showDeveloperInfo ? Icons.expand_less : Icons.expand_more, color: Colors.black54),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDeveloperInfo() {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("👨‍💻 Developers", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("Krish, Mohit, Anshul, Madhan", style: TextStyle(fontSize: 16)),
+            SizedBox(height: 10),
+            Text("🚀 Team Name: EcoCoders", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(height: 10),
+            Text("🎯 Our Goal: We aim to optimize waste recycling using technology, making the process more efficient, sustainable, and accessible to everyone.", style: TextStyle(fontSize: 16)),
+          ],
+        ),
       ),
     );
   }

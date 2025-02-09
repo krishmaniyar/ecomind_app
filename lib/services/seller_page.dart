@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 
 import '../models/brew.dart';
 import '../models/user.dart';
-import '../screens/home/brew_list.dart';
 import '../screens/home/home.dart';
 import 'add_product.dart';
 import 'database.dart';
@@ -56,18 +55,31 @@ class _SellerPageState extends State<SellerPage> {
       initialData: null,
       value: DatabaseService(uid: user!.uid).brews,
       child: Scaffold(
+        appBar: AppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Your Products',
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            ],
+          ),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.green.shade700, Colors.green.shade400],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+        ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: SafeArea(
             child: Column(
               children: [
-                Text(
-                  'Your Products',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 30,
-                  ),
-                ),
                 Expanded(
                   child: SaleList()
                 ),
@@ -82,7 +94,7 @@ class _SellerPageState extends State<SellerPage> {
               MaterialPageRoute(builder: (context) => AddProduct()),
             );
           },
-          backgroundColor: Colors.blue[800],
+          backgroundColor: Colors.green,
           child: Icon(
             Icons.add,
             color: Colors.white,
@@ -91,7 +103,7 @@ class _SellerPageState extends State<SellerPage> {
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           backgroundColor: Colors.white, // Optional: make the background white
-          selectedItemColor: Colors.blue[900], // Set color for selected item
+          selectedItemColor: Colors.green, // Set color for selected item
           unselectedItemColor: Colors.black,
           onTap: (index) {
             setState(() {
@@ -114,11 +126,11 @@ class _SellerPageState extends State<SellerPage> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.money_outlined),
+              icon: Icon(Icons.shopping_bag_outlined),
               label: 'Buyer',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.money_off),
+              icon: Icon(Icons.shopping_cart_outlined),
               label: 'Seller',
             ),
             BottomNavigationBarItem(

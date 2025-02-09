@@ -37,7 +37,7 @@ class _SignInState extends State<SignIn> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.recycling_outlined,
+                  Icons.eco,
                   size: 40.0,
                 ),
                 SizedBox(
